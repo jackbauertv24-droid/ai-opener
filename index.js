@@ -6,9 +6,10 @@ const PORT = process.env.PORT || 3000;
 
 // Configuration: Where to forward requests
 // Change these values or set via environment variables
+const TARGET_PROTOCOL = process.env.TARGET_PROTOCOL || 'https';
 const TARGET_HOST = process.env.TARGET_HOST || 'localhost';
-const TARGET_PORT = process.env.TARGET_PORT || '8080';
-const TARGET_URL = `http://${TARGET_HOST}:${TARGET_PORT}`;
+const TARGET_PORT = process.env.TARGET_PORT || (TARGET_PROTOCOL === 'https' ? '443' : '8080');
+const TARGET_URL = `${TARGET_PROTOCOL}://${TARGET_HOST}:${TARGET_PORT}`;
 
 console.log(`🚀 AI Opener Router starting...`);
 console.log(`   Listening on port: ${PORT}`);
@@ -18,6 +19,10 @@ console.log(`   Forwarding to: ${TARGET_URL}`);
 const proxyOptions = {
   target: TARGET_URL,
   changeOrigin: true,
+  // Remove X-Forwarded-For header to avoid leaking original client IP
+  headers: {
+    'X-Forwarded-For': '',
+  },
   pathRewrite: {
     '^/api': '/api', // Keep /api prefix if needed
   },
@@ -29,6 +34,10 @@ const proxyOptions = {
     });
   },
   onProxyReq: (proxyReq, req, res) => {
+    // Remove X-Forwarded-For header if it exists
+    if (proxyReq.getHeader('x-forwarded-for')) {
+      proxyReq.setHeader('x-forwarded-for', '');
+    }
     console.log(`➡️  ${req.method} ${req.path} → ${TARGET_URL}`);
   },
   onProxyRes: (proxyReq, proxyRes, req, res) => {

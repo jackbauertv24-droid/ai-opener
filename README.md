@@ -23,8 +23,11 @@ Set these environment variables:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | Port to listen on |
+| `TARGET_PROTOCOL` | `https` | Protocol (`http` or `https`) |
 | `TARGET_HOST` | `localhost` | Backend host to forward to |
-| `TARGET_PORT` | `8080` | Backend port to forward to |
+| `TARGET_PORT` | `443` (https) / `8080` (http) | Backend port to forward to |
+
+> **Note:** The proxy removes the `X-Forwarded-For` header to avoid leaking the original client IP address to the target server.
 
 ## Usage
 
