@@ -3,6 +3,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const LOG_LEVEL = process.env.LOG_LEVEL || 'info'; // debug, info, warn, error
 
 // Configuration: Where to forward requests
 // Change these values or set via environment variables
@@ -11,9 +12,27 @@ const TARGET_HOST = process.env.TARGET_HOST || 'localhost';
 const TARGET_PORT = process.env.TARGET_PORT || (TARGET_PROTOCOL === 'https' ? '443' : '8080');
 const TARGET_URL = `${TARGET_PROTOCOL}://${TARGET_HOST}:${TARGET_PORT}`;
 
-console.log(`🚀 AI Opener Router starting...`);
-console.log(`   Listening on port: ${PORT}`);
-console.log(`   Forwarding to: ${TARGET_URL}`);
+// Logging utility with levels
+const levels = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
+};
+
+const currentLevel = levels[LOG_LEVEL.toLowerCase()] || levels.info;
+
+const log = {
+  debug: (msg) => currentLevel <= levels.debug && console.log(`[DEBUG] ${new Date().toISOString()} - ${msg}`),
+  info: (msg) => currentLevel <= levels.info && console.log(`[INFO]  ${new Date().toISOString()} - ${msg}`),
+  warn: (msg) => currentLevel <= levels.warn && console.warn(`[WARN]  ${new Date().toISOString()} - ${msg}`),
+  error: (msg) => currentLevel <= levels.error && console.error(`[ERROR] ${new Date().toISOString()} - ${msg}`),
+};
+
+log.info(`🚀 AI Opener Router starting...`);
+log.info(`   Listening on port: ${PORT}`);
+log.info(`   Forwarding to: ${TARGET_URL}`);
+log.info(`   Log level: ${LOG_LEVEL}`);
 
 // Create proxy middleware
 const proxyOptions = {
@@ -27,7 +46,7 @@ const proxyOptions = {
     '^/api': '/api', // Keep /api prefix if needed
   },
   onError: (err, req, res) => {
-    console.error(`❌ Proxy error: ${err.message}`);
+    log.error(`Proxy error: ${err.message}`);
     res.status(500).json({
       error: 'Backend service unavailable',
       message: err.message,
@@ -38,10 +57,23 @@ const proxyOptions = {
     if (proxyReq.getHeader('x-forwarded-for')) {
       proxyReq.setHeader('x-forwarded-for', '');
     }
-    console.log(`➡️  ${req.method} ${req.path} → ${TARGET_URL}`);
+    
+    const method = req.method;
+    const path = req.path;
+    const clientIp = req.ip || req.connection.remoteAddress;
+    
+    log.debug(`Incoming request: ${method} ${path} from ${clientIp}`);
+    log.info(`➡️  ${method} ${path} → ${TARGET_URL}`);
+    
+    // Log request headers (debug level only)
+    log.debug(`Request headers: ${JSON.stringify(req.headers)}`);
   },
   onProxyRes: (proxyReq, proxyRes, req, res) => {
-    console.log(`⬅️  ${req.path} - Status: ${proxyRes.statusCode}`);
+    const path = req.path;
+    const status = proxyRes.statusCode;
+    
+    log.info(`⬅️  ${path} - Status: ${status}`);
+    log.debug(`Response headers: ${JSON.stringify(proxyRes.headers)}`);
   },
 };
 
