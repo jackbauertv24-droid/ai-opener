@@ -176,13 +176,7 @@ function createRoutingProxy() {
   };
 }
 
-// Apply authentication to all routes
-app.use(authenticateRouter);
-
-// Apply routing proxy
-app.use(createRoutingProxy());
-
-// Health check endpoint (public)
+// Health check endpoint (public, no auth required)
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -193,7 +187,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Root endpoint (public)
+// Root endpoint (public, no auth required)
 app.get('/', (req, res) => {
   res.json({
     service: 'ai-opener-router',
@@ -209,6 +203,12 @@ app.get('/', (req, res) => {
     })),
   });
 });
+
+// Apply authentication to all other routes
+app.use(authenticateRouter);
+
+// Apply routing proxy
+app.use(createRoutingProxy());
 
 // Start server
 app.listen(PORT, () => {
