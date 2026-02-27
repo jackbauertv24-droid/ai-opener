@@ -7,6 +7,15 @@
 [HPM] Proxy created: /  -> https://integrate.api.nvidia.com:443
 [HPM] Proxy rewrite rule created: "^/nvidia" ~> ""
 [INFO]  2026-02-27T06:06:04.461Z - ⬅️  /nvidia/v1/chat/completions - Status: null
-0:01  0:00:01 --:--:--   172100   207    0     0  100   207      0     93  0:00:02  0:00:02 --:--:--    94100   950  100   743  100   207    285     79  0:00:02  0:00:02 --:--:--   365
-{"id":"chatcmpl-b1332fd44efbd9be","object":"chat.completion","created":1772172363,"model":"qwen/qwen3.5-397b-a17b","choices":[{"index":0,"message":{"role":"assistant","content":"It sounds like you're interested in **multi-destination routing**! To help you effectively, could you clarify:\n\n1. **What system/tool are","refusal":null,"annotations":null,"audio":null,"function_call":null,"tool_calls":[],"reasoning":null,"reasoning_content":null},"logprobs":null,"finish_reason":"length","stop_reason":null,"token_ids":null}],"service_tier":null,"system_fingerprint":null,"usage":{"prompt_tokens":18,"total_tokens":48,"completion_tokens":30,"prompt_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"kv_transfer_params":null}
+[INFO]  2026-02-27T06:32:27.777Z - ➡️  GET /nvidia/v1/models → https://integrate.api.nvidia.com:443/v1/models [key: nvidia]
+[HPM] Proxy created: /  -> https://integrate.api.nvidia.com:443
+[HPM] Proxy rewrite rule created: "^/nvidia" ~> ""
+[INFO]  2026-02-27T06:32:27.855Z - ⬅️  /nvidia/v1/models - Status: null
+[INFO]  2026-02-27T06:32:27.867Z - ➡️  POST /nvidia/v1/chat/completions → https://integrate.api.nvidia.com:443/v1/chat/completions [key: nvidia]
+[HPM] Proxy created: /  -> https://integrate.api.nvidia.com:443
+[HPM] Proxy rewrite rule created: "^/nvidia" ~> ""
+[INFO]  2026-02-27T06:32:28.103Z - ⬅️  /nvidia/v1/chat/completions - Status: null
+[WARN]  2026-02-27T06:32:28.730Z - Unknown destination key: deepseek. Available: nvidia
+[WARN]  2026-02-27T06:32:28.741Z - Unknown destination key: invalid. Available: nvidia
+s":null},"prompt_logprobs":null,"prompt_token_ids":null,"kv_transfer_params":null}
 === MULTI-DEST TEST END ===
