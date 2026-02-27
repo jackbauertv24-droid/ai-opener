@@ -43,7 +43,7 @@ const proxyOptions = {
     'X-Forwarded-For': '',
   },
   pathRewrite: {
-    '^/api': '/api', // Keep /api prefix if needed
+    '^/api': '', // Strip /api prefix (e.g., /api/v1/... → /v1/...)
   },
   onError: (err, req, res) => {
     log.error(`Proxy error: ${err.message}`);
