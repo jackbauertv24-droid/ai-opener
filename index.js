@@ -182,7 +182,6 @@ app.get('/health', (req, res) => {
     status: 'ok',
     service: 'ai-opener-router',
     port: PORT,
-    destinations: Object.keys(destinations),
     timestamp: new Date().toISOString(),
   });
 });
@@ -196,11 +195,6 @@ app.get('/', (req, res) => {
       health: '/health',
       routing: '/<destination>/*',
     },
-    destinations: Object.keys(destinations).map(key => ({
-      key,
-      url: destinations[key].url,
-      hasApiKey: !!destinations[key].apiKey,
-    })),
   });
 });
 
