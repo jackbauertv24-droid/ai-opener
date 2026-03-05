@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { version } = require('./package.json');
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
@@ -197,7 +198,7 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     service: 'ai-opener-router',
-    version: '1.0.0',
+    version,
     endpoints: {
       health: '/health',
       routing: '/<destination>/*',
