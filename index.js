@@ -19,6 +19,8 @@ const log = {
 
 // Load destinations from environment variables
 function loadDestinations() {
+  // Validate DEST_<NAME>_PROTOCOL values (only "http" or "https" allowed)
+  const allowedProtocols = new Set(['http', 'https']);
   const destinations = {};
   const envKeys = Object.keys(process.env);
   const destNames = new Set();
@@ -34,6 +36,11 @@ function loadDestinations() {
   // Build destination objects with API keys
   destNames.forEach(name => {
     const protocol = process.env[`DEST_${name}_PROTOCOL`] || 'https';
+    // Validate protocol value
+    if (!allowedProtocols.has(protocol.toLowerCase())) {
+      log.warn(`Invalid protocol "${protocol}" for destination "${name}". Skipping this destination.`);
+      return; // skip adding this destination
+    }
     const host = process.env[`DEST_${name}_HOST`] || 'localhost';
     const port = process.env[`DEST_${name}_PORT`] || (protocol === 'https' ? '443' : '8080');
     const apiKey = process.env[`${name}_API_KEY`] || null;
@@ -205,6 +212,13 @@ app.use(authenticateRouter);
 app.use(createRoutingProxy());
 
 // Start server
-app.listen(PORT, () => {
-  log.info(`✅ Server ready on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    log.info(`✅ Server ready on http://localhost:${PORT}`);
+  });
+}
+
+// Export for testing
+module.exports = { loadDestinations, app };
+
+
